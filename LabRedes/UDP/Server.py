@@ -7,5 +7,11 @@ print ("The server is ready to receive")
        
 while True:
     message, clientAddress = serverSocket.recvfrom(2048)
-    modifiedMessage = message.decode().upper()
-    serverSocket.sendto(modifiedMessage.encode(), clientAddress)
+
+    decodedMEssage = message.decode()
+
+    if(decodedMEssage == "fim"):
+            serverSocket.sendto('Encerrando conexão...'.encode(), clientAddress)
+            break
+    else:
+        serverSocket.sendto(decodedMEssage.upper().encode(), clientAddress)
