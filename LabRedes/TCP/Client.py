@@ -24,7 +24,17 @@ def listen():
 def sendToServer():
     while(True):
         command = input()
-        clientSocket.send(command.encode())
+        
+        if(command.upper().strip()  == "PMF"):
+            filePath = input("Insert file path:")
+            with open(filePath, 'rb') as file:
+                content = file.read()
+               
+            message = '<file> \n' + content.decode() 
+            clientSocket.send(message.encode())
+    
+        else:
+            clientSocket.send(command.encode())
 
 def run():
     print("Starting Client...")
@@ -34,15 +44,3 @@ def run():
     threading.Thread(target=sendToServer).start()
 
 run()    
-
-
-        # while(True):
-        #     try: 
-        #         print("Insert a command:")
-        #         command = input()
-        #         clientSocket.send(command.encode())
-        #         response = clientSocket.recv(1024)
-        #         print ('From Server:', response.decode())
-            
-        #     except  ():
-        #         if not threading.main_thread().is_alive(): break

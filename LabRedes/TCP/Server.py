@@ -1,6 +1,5 @@
 from socket import *
 import threading
-import time
 
 clients = []
 
@@ -33,6 +32,12 @@ def privateMessage(userDestination, user_name, message):
             message = "<" + user_name + ">: " + message
             c['clientSocket'].send(message.encode())
             
+def sendFilePrivate(user_name, userDestination, fileContent):
+    for c in clients:
+        if c['username'] == userDestination:
+            message = "<" + user_name + "> Enviou um arquivo: \n" + fileContent + " \n<file>"
+            c['clientSocket'].send(message.encode())
+            
 def client(clientSocket, addr):
     user_name = None
     while(True):
@@ -52,7 +57,7 @@ def client(clientSocket, addr):
                 
                 if(register_status):
                     user_name = username
-                    clientSocket.send('Register Successful:'.encode())
+                    clientSocket.send('Register Successful!'.encode())
                 else:
                     clientSocket.send('Username Already Registered'.encode())
                 
@@ -63,11 +68,18 @@ def client(clientSocket, addr):
                 clientSocket.send('Message Sent'.encode())
                 
             elif(command.upper().strip()  == "PM"):
-                clientSocket.send('Insert user:'.encode())
+                clientSocket.send('Insert user destination:'.encode())
                 userDestination = clientSocket.recv(1024).decode()
                 clientSocket.send('Insert Message:'.encode())
                 message = clientSocket.recv(1024).decode()
                 privateMessage(userDestination, user_name, message)
+                
+            elif( "<file>" in command):
+                clientSocket.send('File received!'.encode())
+                clientSocket.send('Insert user destination:'.encode())
+                userDestination = clientSocket.recv(1024).decode()
+                sendFilePrivate(user_name, userDestination, command)
+                clientSocket.send('File Send!'.encode())
                 
                 
         except  (e):
