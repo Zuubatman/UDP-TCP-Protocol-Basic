@@ -65,7 +65,7 @@ def client(clientSocket, addr):
                 clientSocket.send('Insert message:'.encode())
                 message = clientSocket.recv(1024).decode()
                 broadCast(message, user_name)
-                clientSocket.send('Message Sent'.encode())
+                clientSocket.send('Message Sent!'.encode())
                 
             elif(command.upper().strip()  == "PM"):
                 clientSocket.send('Insert user destination:'.encode())
@@ -73,6 +73,7 @@ def client(clientSocket, addr):
                 clientSocket.send('Insert Message:'.encode())
                 message = clientSocket.recv(1024).decode()
                 privateMessage(userDestination, user_name, message)
+                clientSocket.send('Message Send!'.encode())
                 
             elif( "<file>" in command):
                 clientSocket.send('File received!'.encode())
@@ -101,7 +102,7 @@ def listen():
 
 def run () :
     print("Starting Server...")
-    threading.Thread(target=listen(), args=(1,)).start()
+    threading.Thread(target=listen()).start()
 
 
 run()

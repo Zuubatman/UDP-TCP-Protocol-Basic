@@ -1,17 +1,115 @@
 from socket import *
+import threading
+
 serverPort = 40000
+
 serverSocket = socket(AF_INET, SOCK_DGRAM)
+
 serverSocket.bind(('', serverPort))
 
-print ("The server is ready to receive")
-       
-while True:
-    message, clientAddress = serverSocket.recvfrom(2048)
+serverSocket.settimeout(2)
 
-    decodedMEssage = message.decode()
+clients = []
 
-    if(decodedMEssage == "fim"):
-            serverSocket.sendto('Encerrando conexão...'.encode(), clientAddress)
-            break
-    else:
-        serverSocket.sendto(decodedMEssage.upper().encode(), clientAddress)
+def registerUser(username, clientAddress):
+    for c in clients: 
+        if c['username'] == username:  
+            return False 
+            
+    clients.append({'username': username, 'clientAddress': clientAddress})
+    return True
+    
+def broadCast(message, client_address):
+    senderUsername = None 
+    for c1 in clients:
+        if c1['clientAddress'] == client_address:
+            senderUsername = c1['username']
+    
+    for c in clients:  
+        if c['clientAddress'] != client_address:
+            message2 = "Broadcast from: <" + senderUsername + ">: " + message
+            serverSocket.sendto(message2.encode(), c['clientAddress'])
+            
+def privateMessage(message, user_destination, client_address):
+    senderUsername = None 
+    for c1 in clients:
+        if c1['clientAddress'] == client_address:
+            senderUsername = c1['username']
+    
+    for c in clients:  
+        if c['username'] == user_destination:
+            message = "<" + senderUsername + ">: " + message
+            serverSocket.sendto(message.encode(), c['clientAddress'])
+            
+def sendFilePrivate(client_address, userDestination, fileContent):
+    senderUsername = None 
+    for c1 in clients:
+        if c1['clientAddress'] == client_address:
+            senderUsername = c1['username']
+            
+    for c in clients:
+        if c['username'] == userDestination:
+            message = "<" + senderUsername + "> Enviou um arquivo: \n" + fileContent + " \n<file>"
+            serverSocket.sendto(message.encode(), c['clientAddress'])
+                        
+def client(command, clientAddress):
+    command = command.decode().rstrip()
+    
+    if(command.upper().strip() == 'END'):
+        print("Encerrado")
+        # print(F"Closing connection with {clientSocket.getsockname()}")
+        # clientSocket.close()
+        
+    elif('reg' in command):
+        dataArr = command.split(' ')
+        data = dataArr[1]
+        register_status = registerUser(data, clientAddress)
+            
+        if(register_status):
+            serverSocket.sendto('Register Successful!'.encode(), clientAddress)
+        else:
+            serverSocket.sendto('Username Already Registered'.encode(), clientAddress)
+                    
+    elif('all' in command):
+            dataArr = command.split(' ')
+            data = ' '.join(dataArr[1:])
+            broadCast(data, clientAddress)
+            serverSocket.sendto('Message Sent!'.encode(), clientAddress)
+                    
+    elif('pm' in command):
+            dataArr = command.split(' ')
+            userDestination = dataArr[1]
+            data = ' '.join(dataArr[2:])
+            privateMessage(data, userDestination, clientAddress)
+            serverSocket.sendto('Message Sent!'.encode(), clientAddress)
+                    
+    elif( "file" in command):
+            serverSocket.sendto('File received!'.encode(), clientAddress)
+            dataArr = command.split(' ')
+            userDestination = dataArr[1]
+            data = ' '.join(dataArr[2:])
+            sendFilePrivate(clientAddress, userDestination, data)
+                
+        
+def listen():
+    print("Server is Listening...")
+    while (True):
+
+        try:
+            command, clientAddress = serverSocket.recvfrom(2048)
+            print(F"Listening Address: {clientAddress}")
+            client(command, clientAddress)
+
+        except timeout:      
+            continue
+        
+        except  (e):
+            print(e)
+
+
+def run () :
+    print("Starting Server...")
+    threading.Thread(target=listen()).start()
+
+
+run()
