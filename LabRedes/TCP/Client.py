@@ -12,10 +12,6 @@ def listen():
         try:
             response = clientSocket.recv(1024).decode()
 
-            if(response.upper() == 'END'):
-                clientSocket.close()
-                break
-
             print (response)
 
         except  ():
@@ -33,6 +29,10 @@ def sendToServer():
                
             message = '<file> \n' + content.decode() 
             clientSocket.send(message.encode())
+        
+        elif(command.upper().strip()  == "END"):
+            clientSocket.send(command.encode())
+            clientSocket.close()
     
         else:
             clientSocket.send(command.encode())

@@ -12,11 +12,6 @@ def listen():
     while(True):
         try:
             response, _  = clientSocket.recvfrom(2048)
-
-            if(response.upper() == 'END'):
-                clientSocket.close()
-                break
-
             print (response.decode())
             
         except timeout:  
@@ -41,6 +36,9 @@ def sendToServer():
                
             message = 'file '+ userDestination+ ' <file> \n'+ content.decode() 
             clientSocket.sendto(message.encode(),(serverName, serverPort))
+            
+        elif(command == "end"):
+            clientSocket.close()
     
         else:
             clientSocket.sendto(command.encode(),(serverName, serverPort))

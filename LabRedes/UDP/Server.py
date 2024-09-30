@@ -56,15 +56,24 @@ def sendFilePrivate(client_address, userDestination, fileContent):
             message = "<" + senderUsername + "> Enviou um arquivo: \n" + fileContent + " \n<file>"
             serverSocket.sendto(message.encode(), c['clientAddress'])
 
+# def removeFromClients(clientAddress):
+#     clientAux = []
+    
+#     for c in clients:
+#         if c['clientAddress'] != clientAddress:
+#             clientAux.append(c)
+            
+#     clients = clientAux
+
+    
 #Função para tratar os comandos dos clientes                           
 def client(command, clientAddress):
     command = command.decode().rstrip()
     
-    if(command.upper().strip() == 'END'):
-        print("Encerrado")
-        # print(F"Closing connection with {clientSocket.getsockname()}")
-        # clientSocket.close()
-        # 
+    if(command.strip() == 'end'):
+        print(F"Closing connection with {clientAddress}")
+        # removeFromClients(clientAddress)
+        
     elif(command.split(' ')[0] == 'help'):
         serverSocket.sendto('Commands available: \nREG [username] - Register user\nALL [message] - Broadcast message\nPM [destination] [message] - Private message\nPMF [destination] - Private message with file'.encode(), clientAddress)        
     

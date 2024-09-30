@@ -56,7 +56,7 @@ def client(clientSocket, addr):
                 break
 
             elif(command.upper().strip() == 'HELP'):
-                clientSocket.send('Commands available: \nEND - Close client\nREG - Register user\nALL - Broadcast Message\nPM - Private message\nPMF - Private message with file'.encode())
+                clientSocket.send('Commands available: \nREG - Register user\nALL - Broadcast Message\nPM - Private message\nPMF - Private message with file'.encode())
      
             elif(command.upper().strip() == "REG"):
                 clientSocket.send('Insert username:'.encode())
@@ -81,14 +81,14 @@ def client(clientSocket, addr):
                 clientSocket.send('Insert Message:'.encode())
                 message = clientSocket.recv(1024).decode()
                 privateMessage(userDestination, user_name, message)
-                clientSocket.send('Message Send!'.encode())
+                clientSocket.send('Message Sent!'.encode())
                 
             elif( "<file>" in command):
                 clientSocket.send('File received!'.encode())
                 clientSocket.send('Insert user destination:'.encode())
                 userDestination = clientSocket.recv(1024).decode()
                 sendFilePrivate(user_name, userDestination, command)
-                clientSocket.send('File Send!'.encode())
+                clientSocket.send('File Sent!'.encode())
                 
                 
         except  (e):
