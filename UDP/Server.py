@@ -92,6 +92,8 @@ def client(command, clientAddress):
             userDestination = dataArr[1]
             data = ' '.join(dataArr[2:])
             sendFilePrivate(clientAddress, userDestination, data)
+    else:
+        serverSocket.sendto('Comando não reconhecido'.encode(), clientAddress)
                 
         
 def listen():
