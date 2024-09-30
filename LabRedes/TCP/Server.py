@@ -11,7 +11,7 @@ serverSocket.bind(('',serverPort))
 
 serverSocket.listen(1)
 
-
+#Função que trata o registro de usuários  
 def registerUser(username, clientSocket):
     for c in clients: 
         if c['username'] == username:  
@@ -19,25 +19,30 @@ def registerUser(username, clientSocket):
             
     clients.append({'username': username, 'clientSocket': clientSocket})
     return True
-    
+
+#Função que trata o envio de broadcasts     
 def broadCast(message, user_name):
     for c in clients:  
         if c['username'] != user_name:
             message2 = "Broadcast from <" + user_name + ">: " + message
             c['clientSocket'].send(message2.encode())
             
+
+#Função que trata o envio de mensagens privadas 
 def privateMessage(userDestination, user_name, message):
     for c in clients:  
         if c['username'] == userDestination:
             message = "<" + user_name + ">: " + message
             c['clientSocket'].send(message.encode())
-            
+
+#Função que trata o envio de arquivos            
 def sendFilePrivate(user_name, userDestination, fileContent):
     for c in clients:
         if c['username'] == userDestination:
             message = "<" + user_name + "> Enviou um arquivo: \n" + fileContent + " \n<file>"
             c['clientSocket'].send(message.encode())
-            
+
+#Thread de interação com o cliente             
 def client(clientSocket, addr):
     user_name = None
     while(True):
@@ -89,14 +94,14 @@ def client(clientSocket, addr):
         except  (e):
             if not threading.main_thread().is_alive(): break    
 
-
+#Thread para ouvir os clientes
 def listen():
     print("Server is Listening...")
     while (True):
-
         try:
             clientSocket, addr = serverSocket.accept()
             print(F"Listening socket: {clientSocket.getsockname()}")
+            #Servidor inicia uma thread para se comunicar com cada cliente que estabelece uma nova conexão
             threading.Thread(target=client, args=(clientSocket, addr)).start()
 
         except  (e):

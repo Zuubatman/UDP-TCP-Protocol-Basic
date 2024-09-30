@@ -11,6 +11,7 @@ serverSocket.settimeout(2)
 
 clients = []
 
+#Função que trata o registro de usuários  
 def registerUser(username, clientAddress):
     for c in clients: 
         if c['username'] == username:  
@@ -18,7 +19,8 @@ def registerUser(username, clientAddress):
             
     clients.append({'username': username, 'clientAddress': clientAddress})
     return True
-    
+
+#Função que trata o envio de broadcasts       
 def broadCast(message, client_address):
     senderUsername = None 
     for c1 in clients:
@@ -30,6 +32,7 @@ def broadCast(message, client_address):
             message2 = "Broadcast from <" + senderUsername + ">: " + message
             serverSocket.sendto(message2.encode(), c['clientAddress'])
             
+#Função que trata o envio de mensagens privadas             
 def privateMessage(message, user_destination, client_address):
     senderUsername = None 
     for c1 in clients:
@@ -40,7 +43,8 @@ def privateMessage(message, user_destination, client_address):
         if c['username'] == user_destination:
             message = "<" + senderUsername + ">: " + message
             serverSocket.sendto(message.encode(), c['clientAddress'])
-            
+
+#Função que trata o envio de arquivos             
 def sendFilePrivate(client_address, userDestination, fileContent):
     senderUsername = None 
     for c1 in clients:
@@ -51,7 +55,8 @@ def sendFilePrivate(client_address, userDestination, fileContent):
         if c['username'] == userDestination:
             message = "<" + senderUsername + "> Enviou um arquivo: \n" + fileContent + " \n<file>"
             serverSocket.sendto(message.encode(), c['clientAddress'])
-                        
+
+#Função para tratar os comandos dos clientes                           
 def client(command, clientAddress):
     command = command.decode().rstrip()
     
@@ -95,7 +100,7 @@ def client(command, clientAddress):
     else:
         serverSocket.sendto('Comando não reconhecido'.encode(), clientAddress)
                 
-        
+#Thread para ouvir os clientes        
 def listen():
     print("Server is Listening...")
     while (True):

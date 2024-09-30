@@ -7,16 +7,7 @@ serverPort = 40000
 clientSocket = socket(AF_INET, SOCK_DGRAM)
 clientSocket.settimeout(2)
 
-# message = input('Input lowercase sentence:')
-
-# clientSocket.sendto(message.encode(),(serverName, serverPort))
-# modifiedMessage, serverAddress = clientSocket.recvfrom(2048)
-
-# print (modifiedMessage.decode())
-
-# clientSocket.close()
-
-
+#Thread para ouvir as respostas do servidor       
 def listen():
     while(True):
         try:
@@ -33,7 +24,8 @@ def listen():
 
         except  ():
             if not threading.main_thread().is_alive(): break
-        
+
+#Thread para enviar respostas ao servidor        
 def sendToServer():    
     print("Insert a Command:")
     while(True):
@@ -53,6 +45,8 @@ def sendToServer():
         else:
             clientSocket.sendto(command.encode(),(serverName, serverPort))
 
+
+#Icialização das Threads, uma para ouvir o servidor e outra pra enviar respostas
 def run():
     threading.Thread(target=listen).start()
     threading.Thread(target=sendToServer).start()
