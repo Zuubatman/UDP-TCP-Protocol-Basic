@@ -23,7 +23,7 @@ def registerUser(username, clientSocket):
 def broadCast(message, user_name):
     for c in clients:  
         if c['username'] != user_name:
-            message2 = "Broadcast from: <" + user_name + ">: " + message
+            message2 = "Broadcast from <" + user_name + ">: " + message
             c['clientSocket'].send(message2.encode())
             
 def privateMessage(userDestination, user_name, message):
@@ -49,6 +49,9 @@ def client(clientSocket, addr):
                 print(F"Closing connection with {clientSocket.getsockname()}")
                 clientSocket.close()
                 break
+
+            elif(command.upper().strip() == 'HELP'):
+                clientSocket.send('Commands available: \nEND - Close client\nREG - Register user\nALL - Broadcast Message\nPM - Private message\nPMF - Private message with file'.encode())
      
             elif(command.upper().strip() == "REG"):
                 clientSocket.send('Insert username:'.encode())

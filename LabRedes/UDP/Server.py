@@ -27,7 +27,7 @@ def broadCast(message, client_address):
     
     for c in clients:  
         if c['clientAddress'] != client_address:
-            message2 = "Broadcast from: <" + senderUsername + ">: " + message
+            message2 = "Broadcast from <" + senderUsername + ">: " + message
             serverSocket.sendto(message2.encode(), c['clientAddress'])
             
 def privateMessage(message, user_destination, client_address):
@@ -59,8 +59,11 @@ def client(command, clientAddress):
         print("Encerrado")
         # print(F"Closing connection with {clientSocket.getsockname()}")
         # clientSocket.close()
-        
-    elif('reg' in command):
+        # 
+    elif(command.split(' ')[0] == 'help'):
+        serverSocket.sendto('Commands available: \nREG [username] - Register user\nALL [message] - Broadcast message\nPM [destination] [message] - Private message\nPMF [destination] - Private message with file'.encode(), clientAddress)        
+    
+    elif(command.split(' ')[0] == 'reg'):
         dataArr = command.split(' ')
         data = dataArr[1]
         register_status = registerUser(data, clientAddress)
@@ -70,25 +73,27 @@ def client(command, clientAddress):
         else:
             serverSocket.sendto('Username Already Registered'.encode(), clientAddress)
                     
-    elif('all' in command):
+    elif(command.split(' ')[0] == 'all'):
             dataArr = command.split(' ')
             data = ' '.join(dataArr[1:])
             broadCast(data, clientAddress)
             serverSocket.sendto('Message Sent!'.encode(), clientAddress)
                     
-    elif('pm' in command):
+    elif(command.split(' ')[0] == 'pm'):
             dataArr = command.split(' ')
             userDestination = dataArr[1]
             data = ' '.join(dataArr[2:])
             privateMessage(data, userDestination, clientAddress)
             serverSocket.sendto('Message Sent!'.encode(), clientAddress)
                     
-    elif( "file" in command):
+    elif(command.split(' ')[0] == 'file'):
             serverSocket.sendto('File received!'.encode(), clientAddress)
             dataArr = command.split(' ')
             userDestination = dataArr[1]
             data = ' '.join(dataArr[2:])
             sendFilePrivate(clientAddress, userDestination, data)
+    else:
+        serverSocket.sendto('Comando não reconhecido'.encode(), clientAddress)
                 
         
 def listen():
