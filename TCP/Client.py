@@ -6,7 +6,7 @@ serverName = 'localhost'
 serverPort = 12000
 clientSocket = socket(AF_INET, SOCK_STREAM)
 
-
+#Thread para o cliente ouvir as respostas do Servidor
 def listen():
     while(True):
         try:
@@ -21,6 +21,7 @@ def listen():
         except  ():
             if not threading.main_thread().is_alive(): break
         
+#Thread para enviar respostas para o servidor         
 def sendToServer():
     while(True):
         command = input()
@@ -36,6 +37,7 @@ def sendToServer():
         else:
             clientSocket.send(command.encode())
 
+#Conexão com o servidor e iicialização das Threads
 def run():
     print("Starting Client...")
     clientSocket.connect((serverName,serverPort))
