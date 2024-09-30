@@ -60,7 +60,7 @@ def client(command, clientAddress):
         # print(F"Closing connection with {clientSocket.getsockname()}")
         # clientSocket.close()
         # 
-    elif('help' in command):
+    elif(command.split(' ')[0] == 'help'):
         serverSocket.sendto('Commands available: \nREG [username] - Register user\nALL [message] - Broadcast message\nPM [destination] [message] - Private message\nPMF [destination] - Private message with file'.encode(), clientAddress)        
     
     elif(command.split(' ')[0] == 'reg'):
